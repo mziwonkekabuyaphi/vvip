@@ -223,7 +223,7 @@ body {
 .add-to-cart-btn:hover {
     background: #ff4d4d;
 }
-/* Gate styles */
+/* Gate styles (kept for compatibility, though gate page removed) */
 .gate-container {
     display: grid;
     grid-template-columns: 2fr 1fr;
@@ -529,6 +529,110 @@ button {
     cursor: not-allowed;
     transform: none;
 }
+/* VVIP Modal Popup - elegant replacement for alerts */
+.vvip-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.95);
+    backdrop-filter: blur(8px);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+.vvip-modal.active {
+    opacity: 1;
+    visibility: visible;
+}
+.vvip-modal-card {
+    background: linear-gradient(145deg, #1f1f1f, #0a0a0a);
+    border-radius: 48px;
+    border: 2px solid #b30000;
+    max-width: 450px;
+    width: 90%;
+    padding: 32px 28px;
+    text-align: center;
+    box-shadow: 0 25px 50px rgba(179,0,0,0.3);
+    transform: scale(0.9);
+    transition: transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+.vvip-modal.active .vvip-modal-card {
+    transform: scale(1);
+}
+.vvip-modal-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+}
+.vvip-modal-title {
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, #ff4d4d, #ffd700);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+.vvip-modal-message {
+    color: #ddd;
+    font-size: 16px;
+    margin-bottom: 28px;
+    line-height: 1.5;
+}
+.vvip-modal-btn {
+    background: #b30000;
+    border: none;
+    padding: 12px 32px;
+    border-radius: 60px;
+    color: white;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+.vvip-modal-btn:hover {
+    background: #ff4d4d;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(179,0,0,0.5);
+}
+/* QR Scanner overlay */
+.qr-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.95);
+    z-index: 20001;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(8px);
+}
+.qr-video {
+    width: 90%;
+    max-width: 500px;
+    border-radius: 24px;
+    border: 3px solid #b30000;
+    transform: scaleX(-1);
+}
+.qr-close {
+    margin-top: 20px;
+    background: #b30000;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 40px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
 /* Responsive */
 @media (max-width: 768px) {
     .main-layout { grid-template-columns: 1fr !important; }
@@ -556,7 +660,6 @@ button {
             <div>Guests: <span id="quickGuests">0</span></div>
         </div>
         <div class="status-buttons">
-            <button class="status-btn" onclick="openTablesModal()">📋 TABLES</button>
             <button class="status-btn" onclick="openDashboardModal()">📊 DASHBOARD</button>
             <button class="status-btn" onclick="openBandsModal()">🖨️ BANDS</button>
             <button class="status-btn" onclick="switchToActiveOrders()">👨‍🍳 ACTIVE ORDERS</button>
@@ -566,8 +669,8 @@ button {
     <!-- ==================== POS SECTION ==================== -->
     <div id="pos" class="section active">
         <div class="vendor-header" style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
-            <span class="vendor-icon" style="font-size: 28px;">🏪</span>
-            <h3 style="color: #ff4d4d;">Counter Point of Sale</h3>
+            <span class="vendor-icon" style="font-size: 28px;">👑</span>
+            <h3 style="color: #ff4d4d;">VVIP Tab System</h3>
             <span class="current-vendor" style="background: #b30000; padding: 6px 18px; border-radius: 40px; font-weight: 600; margin-left: auto;" id="currentVendorDisplay">Rands Smart Counter</span>
         </div>
 
@@ -577,12 +680,13 @@ button {
             <option value="The Butcher Shop">🥩 The Butcher Shop - South African Food</option>
         </select>
 
-        <!-- Customer Band Scanner with NFC button -->
+        <!-- Customer Band Scanner with NFC + QR buttons -->
         <div style="display:flex; gap:10px; margin-bottom:20px; flex-wrap: wrap;">
             <input id="posBand" placeholder="Scan Customer Band ID" style="flex:2; padding:12px; background:#333; border:none; border-radius:8px; color:white;">
             <button class="gate-btn gate-btn-primary" onclick="loadCustomerCart()" style="flex:1;">LOAD CUSTOMER</button>
             <button class="gate-btn gate-btn-secondary" onclick="simulateBandScan()" style="flex:0.5;">🎲 DEMO</button>
             <button id="nfcButton" class="nfc-btn" style="flex:0.5;">📡 Tap NFC</button>
+            <button class="nfc-btn" onclick="startQRScanner()" style="background:#00a86b; margin-left:5px;">📷 QR SCAN</button>
         </div>
 
         <!-- Customer Info Bar -->
@@ -621,52 +725,6 @@ button {
                 </div>
             </div>
         </div>
-
-        <!-- VVIP Entry Button -->
-        <div class="vvip-entry-btn" onclick="switchToVVIP()" style="background: linear-gradient(145deg, #b30000, #8b0000); border-radius:24px; padding:20px; margin-top:20px; display:flex; justify-content:space-between; cursor:pointer; box-shadow: 0 6px 0 #6d0000;">
-            <div style="display:flex; gap:20px;"><div style="font-size:36px;">🚪</div><div><div style="font-weight:bold; font-size:20px;">VVIP ENTRY GATE</div><div style="font-size:12px;">Security Checkpoint</div></div></div>
-            <div style="font-size:30px;">→</div>
-        </div>
-    </div>
-
-    <!-- ==================== VVIP GATE SECTION ==================== -->
-    <div id="gate" class="section">
-        <div class="gate-container">
-            <div class="gate-scanner-panel">
-                <div class="gate-header">
-                    <div class="gate-title">🌟 VVIP Golden Access</div>
-                </div>
-                <div class="gate-controls">
-                    <input type="text" id="gateBand" placeholder="Tap RFID wristband or enter ID">
-                    <button class="gate-btn gate-btn-primary" onclick="enterEvent()">VERIFY</button>
-                    <button class="gate-btn gate-btn-secondary" onclick="simulateGateTap()">SIMULATE TAP</button>
-                </div>
-                <div class="gate-stats" style="display:grid; grid-template-columns:repeat(2,1fr); gap:15px; margin-top:20px;">
-                    <div class="gate-stat-card">
-                        <div class="gate-stat-value" id="gateTodayCount">0</div>
-                        <div>Entries Today</div>
-                    </div>
-                    <div class="gate-stat-card">
-                        <div class="gate-stat-value" id="gateActiveInside">0</div>
-                        <div>Currently Inside</div>
-                    </div>
-                    <div class="gate-stat-card">
-                        <div class="gate-stat-value" id="gateRejected">0</div>
-                        <div>Rejected</div>
-                    </div>
-                </div>
-                <div class="gate-alert" id="gateAlert" style="display:none; background:#b30000; padding:12px; margin-top:15px; text-align:center; border-radius:40px;"></div>
-            </div>
-            <div class="access-log">
-                <div class="access-log-header" style="color:#ff4d4d; font-weight:bold; margin-bottom:15px;">🔴 LIVE ACCESS LOG</div>
-                <div id="accessLogEntries"></div>
-            </div>
-        </div>
-        <!-- Back to POS -->
-        <div onclick="switchToPOS()" style="background: linear-gradient(145deg, #00a86b, #008f5c); border-radius:24px; padding:20px; margin-top:20px; display:flex; justify-content:space-between; cursor:pointer;">
-            <div style="display:flex; gap:20px;"><div style="font-size:36px;">💰</div><div><div style="font-weight:bold; font-size:20px;">BACK TO POS</div><div>Return to Counter</div></div></div>
-            <div style="font-size:30px;">←</div>
-        </div>
     </div>
 
     <!-- ==================== ACTIVE ORDERS MODE SECTION ==================== -->
@@ -680,24 +738,6 @@ button {
         </div>
         <div style="margin-top:20px; text-align:center; font-size:12px; color:#888;">
             Orders automatically refresh every 2 seconds. When an order is marked <strong style="color:#b30000;">READY</strong>, it will be highlighted and a sound will play.
-        </div>
-    </div>
-
-    <!-- ==================== TABLES MANAGEMENT MODAL ==================== -->
-    <div id="tablesModal" class="modal">
-        <div class="modal-content">
-            <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
-                <h2 style="color:#ff4d4d;">📋 TABLES MANAGEMENT</h2>
-                <button onclick="closeTablesModal()" style="background:none; border:none; color:white; font-size:24px; cursor:pointer;">✕</button>
-            </div>
-            <div style="margin-bottom:20px;">
-                <h3>Create New Table</h3>
-                <input type="text" id="newTableName" placeholder="Table Name (e.g., VIP 1)">
-                <input type="number" id="newTableCapacity" placeholder="Capacity (max guests)" value="10">
-                <input type="number" id="newTableTab" placeholder="Tab Amount (R)" value="8000">
-                <button onclick="createTable()" class="gate-btn-primary" style="padding:8px 20px; border-radius:40px;">+ Create Table</button>
-            </div>
-            <div id="tablesList"></div>
         </div>
     </div>
 
@@ -740,7 +780,117 @@ button {
     </div>
 </div>
 
+<!-- VVIP Modal Popup -->
+<div id="vvipModal" class="vvip-modal">
+    <div class="vvip-modal-card">
+        <div class="vvip-modal-icon" id="vvipModalIcon">👑</div>
+        <div class="vvip-modal-title" id="vvipModalTitle">VVIP Notification</div>
+        <div class="vvip-modal-message" id="vvipModalMessage">Message</div>
+        <button class="vvip-modal-btn" onclick="closeVVIPModal()">Confirm</button>
+    </div>
+</div>
+
+<!-- QR Scanner Overlay -->
+<div id="qrOverlay" class="qr-overlay">
+    <video id="qrVideo" class="qr-video" autoplay playsinline></video>
+    <button class="qr-close" onclick="stopQRScanner()">Cancel</button>
+</div>
+
 <script>
+// ==================== VVIP MODAL SYSTEM ====================
+function showVVIPModal(title, message, icon = "👑") {
+    const modal = document.getElementById("vvipModal");
+    document.getElementById("vvipModalTitle").innerText = title;
+    document.getElementById("vvipModalMessage").innerHTML = message;
+    document.getElementById("vvipModalIcon").innerHTML = icon;
+    modal.classList.add("active");
+}
+function closeVVIPModal() {
+    document.getElementById("vvipModal").classList.remove("active");
+}
+window.alert = function(msg) { showVVIPModal("VVIP Alert", msg, "✨"); };
+
+// ==================== QR CODE SCANNER ====================
+let qrScannerActive = false;
+let qrStream = null;
+
+async function startQRScanner() {
+    const overlay = document.getElementById("qrOverlay");
+    const video = document.getElementById("qrVideo");
+    overlay.style.display = "flex";
+    
+    try {
+        qrStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+        video.srcObject = qrStream;
+        await video.play();
+        qrScannerActive = true;
+        scanQRCode();
+    } catch (err) {
+        showVVIPModal("Camera Error", "Could not access camera. Please check permissions.", "📷");
+        stopQRScanner();
+    }
+}
+
+function stopQRScanner() {
+    if (qrStream) {
+        qrStream.getTracks().forEach(track => track.stop());
+        qrStream = null;
+    }
+    const video = document.getElementById("qrVideo");
+    video.srcObject = null;
+    document.getElementById("qrOverlay").style.display = "none";
+    qrScannerActive = false;
+}
+
+async function scanQRCode() {
+    if (!qrScannerActive) return;
+    const video = document.getElementById("qrVideo");
+    if (video.readyState !== video.HAVE_ENOUGH_DATA) {
+        requestAnimationFrame(scanQRCode);
+        return;
+    }
+    
+    // Use BarcodeDetector API if available
+    if ('BarcodeDetector' in window) {
+        const detector = new BarcodeDetector({ formats: ['qr_code'] });
+        try {
+            const barcodes = await detector.detect(video);
+            if (barcodes.length > 0) {
+                const walletId = barcodes[0].rawValue;
+                stopQRScanner();
+                document.getElementById("posBand").value = walletId;
+                loadCustomerCart();
+                return;
+            }
+        } catch(e) { /* fallback */ }
+    }
+    
+    // Fallback: use canvas with jsQR
+    if (typeof jsQR === 'undefined') {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js';
+        script.onload = () => { scanQRCode(); };
+        document.head.appendChild(script);
+        return;
+    }
+    
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const code = jsQR(imageData.data, canvas.width, canvas.height);
+    if (code) {
+        const walletId = code.data;
+        stopQRScanner();
+        document.getElementById("posBand").value = walletId;
+        loadCustomerCart();
+        return;
+    }
+    requestAnimationFrame(scanQRCode);
+}
+
 // ==================== WALLET (UNIFIED) ====================
 let walletAccounts = {};
 let tables = {};
@@ -866,101 +1016,6 @@ function loadAll() {
 }
 loadAll();
 
-// ==================== TABLES MANAGEMENT ====================
-function openTablesModal() {
-    document.getElementById("tablesModal").style.display = "flex";
-    renderTablesList();
-}
-function closeTablesModal() {
-    document.getElementById("tablesModal").style.display = "none";
-}
-function renderTablesList() {
-    const container = document.getElementById("tablesList");
-    container.innerHTML = "";
-    for (let key in tables) {
-        const t = tables[key];
-        const div = document.createElement("div");
-        div.className = "table-card";
-        div.innerHTML = `
-            <div class="table-header">
-                <span class="table-name">${t.name}</span>
-                <span class="table-balance">Tab: R${t.tabBalance}</span>
-            </div>
-            <div>Capacity: ${t.entriesUsed}/${t.capacity} used</div>
-            <div>Guests: <span id="guests-${key}">${t.guests.join(", ") || "none"}</span></div>
-            <div>
-                <input type="text" id="assignBand-${key}" placeholder="Wallet ID" style="width:120px; padding:4px; background:#333; border:none; border-radius:40px; color:white;">
-                <button onclick="assignWalletToTable('${key}')" class="btn-small">Assign</button>
-                <button onclick="unassignWalletFromTable('${key}', prompt('Wallet ID to remove:'))" class="btn-small">Remove</button>
-                ${t.guests.map(walletId => `<button onclick="printWristband('${walletId}')" class="btn-small" style="background:#00a86b;">🖨️ Print ${walletId}</button>`).join('')}
-            </div>
-        `;
-        container.appendChild(div);
-    }
-}
-function createTable() {
-    let name = document.getElementById("newTableName").value.trim();
-    let capacity = parseInt(document.getElementById("newTableCapacity").value);
-    let tab = parseInt(document.getElementById("newTableTab").value);
-    if (!name || capacity < 1) return alert("Enter valid name and capacity");
-    if (tables[name]) return alert("Table already exists");
-    tables[name] = {
-        name: name,
-        capacity: capacity,
-        tabBalance: tab,
-        entriesUsed: 0,
-        guests: [],
-        originalTab: tab
-    };
-    revenue += 2000;
-    saveAll();
-    renderTablesList();
-    updateQuickStats();
-    alert(`Table ${name} created with R${tab} tab + R2000 fee.`);
-}
-function assignWalletToTable(tableName) {
-    const walletId = document.getElementById(`assignBand-${tableName}`).value.trim();
-    if (!walletId) return alert("Enter wallet ID");
-    if (!walletAccounts[walletId]) {
-        if (confirm("Wallet not found. Create new wallet with this ID?")) {
-            walletAccounts[walletId] = { id: walletId, name: "New Guest", balance: 0, pin: "0000", tableTab: 0, tableName: null };
-            saveWalletAccountsFromMap();
-        } else return;
-    }
-    const table = tables[tableName];
-    if (table.guests.includes(walletId)) return alert("Wallet already assigned");
-    if (table.guests.length >= table.capacity) return alert("Table at full capacity");
-    table.guests.push(walletId);
-    table.entriesUsed = table.guests.length;
-    const account = walletAccounts[walletId];
-    account.tableName = tableName;
-    account.tableTab = table.tabBalance;
-    saveWalletAccountsFromMap();
-    saveAll();
-    renderTablesList();
-    alert(`${walletId} assigned to ${tableName}`);
-}
-function unassignWalletFromTable(tableName, walletId) {
-    if (!walletId) return;
-    const table = tables[tableName];
-    const idx = table.guests.indexOf(walletId);
-    if (idx !== -1) {
-        table.guests.splice(idx, 1);
-        table.entriesUsed = table.guests.length;
-        const account = walletAccounts[walletId];
-        if (account) {
-            delete account.tableName;
-            delete account.tableTab;
-            saveWalletAccountsFromMap();
-        }
-        saveAll();
-        renderTablesList();
-        alert(`${walletId} removed from ${tableName}`);
-    } else {
-        alert("Wallet not found in this table");
-    }
-}
-
 // ==================== BANDS MODAL ====================
 function openBandsModal() {
     document.getElementById("bandsModal").style.display = "flex";
@@ -979,22 +1034,14 @@ function renderBandsList() {
     let html = `<table class="bands-table"><thead><tr><th>Wallet ID</th><th>Name</th><th>Balance</th><th>Table</th><th>Action</th></tr></thead><tbody>`;
     for (let id in walletAccounts) {
         const acc = walletAccounts[id];
-        html += `
-            <tr>
-                <td>${id}</td>
-                <td>${acc.name || '-'}</td>
-                <td>R${acc.balance}</td>
-                <td>${acc.tableName || '-'}</td>
-                <td><button onclick="printWristband('${id}')" class="btn-small">🖨️ Print Wristband</button></td>
-            </tr>
-        `;
+        html += `<tr><td>${id}</td><td>${acc.name || '-'}</td><td>R${acc.balance}</td><td>${acc.tableName || '-'}</td><td><button onclick="printWristband('${id}')" class="btn-small">🖨️ Print Wristband</button></td></tr>`;
     }
     html += `</tbody></table>`;
     container.innerHTML = html;
 }
 function printWristband(bandId) {
     const account = walletAccounts[bandId];
-    if (!account) { alert("Wallet not found"); return; }
+    if (!account) { showVVIPModal("Error", "Wallet not found", "⚠️"); return; }
     const printWindow = window.open('', '_blank');
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(bandId)}`;
     printWindow.document.write(`
@@ -1026,88 +1073,6 @@ function printWristband(bandId) {
     printWindow.print();
 }
 
-// ==================== GATE FUNCTIONS ====================
-function enterEvent() {
-    let id = document.getElementById("gateBand").value.trim();
-    if (!id) return showGateAlert("Enter wallet ID");
-    const account = walletAccounts[id];
-    if (!account) return showGateAlert("Wallet not found");
-
-    let tableName = account.tableName;
-    if (tableName) {
-        let table = tables[tableName];
-        if (!table) return showGateAlert("Table not found");
-        if (table.entriesUsed >= table.capacity) {
-            showGateAlert(`Table ${tableName} at capacity (${table.capacity})`);
-            addAccessLog(id, "Entry denied - Table full", "denied");
-            rejectedEntries++;
-            saveAll();
-            updateGateStats();
-            return;
-        }
-        if (!table.guests.includes(id)) {
-            table.guests.push(id);
-            table.entriesUsed = table.guests.length;
-            guests++;
-            addAccessLog(id, `Entry granted (Table ${tableName})`, "granted");
-        } else {
-            addAccessLog(id, `Re-entry to ${tableName}`, "granted");
-        }
-        saveAll();
-    } else {
-        // Normal entry (no table)
-        if (!bandEntries[id]) bandEntries[id] = 0;
-        let capacity = bandCapacities[id] || 5;
-        if (bandEntries[id] >= capacity) {
-            showGateAlert(`Entry limit reached (${capacity})`);
-            addAccessLog(id, "Entry denied - limit reached", "denied");
-            rejectedEntries++;
-            saveAll();
-            updateGateStats();
-            return;
-        }
-        bandEntries[id]++;
-        guests++;
-        addAccessLog(id, "Entry granted", "granted");
-        saveAll();
-    }
-    updateGateStats();
-    updateQuickStats();
-    document.getElementById("gateBand").value = "";
-}
-function simulateGateTap() {
-    let walletIds = Object.keys(walletAccounts);
-    if (walletIds.length) {
-        let random = walletIds[Math.floor(Math.random() * walletIds.length)];
-        document.getElementById("gateBand").value = random;
-        enterEvent();
-    }
-}
-function addAccessLog(identifier, action, status) {
-    let time = new Date().toLocaleTimeString();
-    accessLog.unshift({ time, identifier, action, status });
-    if (accessLog.length > 20) accessLog.pop();
-    let container = document.getElementById("accessLogEntries");
-    container.innerHTML = "";
-    accessLog.slice(0,10).forEach(e => {
-        let div = document.createElement("div");
-        div.className = "access-entry";
-        div.innerHTML = `<span class="access-time" style="color:#aaa;">${e.time}</span><span class="access-band" style="color:#00ff9c; font-weight:bold;">${e.identifier}</span><span>${e.action}</span><span class="${e.status === 'granted' ? 'status-granted' : 'status-denied'}">${e.status.toUpperCase()}</span>`;
-        container.appendChild(div);
-    });
-    saveAll();
-}
-function showGateAlert(msg) {
-    let alertDiv = document.getElementById("gateAlert");
-    alertDiv.style.display = "block";
-    alertDiv.innerText = msg;
-    setTimeout(() => alertDiv.style.display = "none", 3000);
-}
-function updateGateStats() {
-    document.getElementById("gateTodayCount").innerText = guests;
-    document.getElementById("gateActiveInside").innerText = guests;
-    document.getElementById("gateRejected").innerText = rejectedEntries;
-}
 function updateQuickStats() {
     document.getElementById("quickRevenue").innerText = "R" + revenue;
     document.getElementById("quickGuests").innerText = guests;
@@ -1133,7 +1098,7 @@ function updateVendorMenu() {
     });
 }
 function addToCart(name, price, vendor) {
-    if (!currentCustomerAccount) return alert("Load customer first");
+    if (!currentCustomerAccount) { showVVIPModal("Customer Required", "Please load a customer band first.", "⚠️"); return; }
     let existing = currentCart.find(i => i.name === name && i.vendor === vendor);
     if (existing) existing.quantity++;
     else currentCart.push({ name, price, vendor, quantity: 1 });
@@ -1200,9 +1165,9 @@ function removeFromCart(idx) {
 function clearCart() { currentCart = []; updateCartDisplay(); }
 function loadCustomerCart() {
     let band = document.getElementById("posBand").value.trim();
-    if (!band) return alert("Enter wallet ID");
+    if (!band) { showVVIPModal("Input Required", "Enter or scan a wallet ID.", "📱"); return; }
     const account = walletAccounts[band];
-    if (!account) return alert("Wallet not found");
+    if (!account) { showVVIPModal("Wallet Not Found", `ID "${band}" not registered.`, "🔍"); return; }
     currentCart = [];
     currentCustomerAccount = account;
     let tableName = account.tableName;
@@ -1217,6 +1182,7 @@ function loadCustomerCart() {
     }
     document.getElementById("customerInfoBar").style.display = "block";
     updateCartDisplay();
+    showVVIPModal("Customer Loaded", `Welcome ${band}. Balance: R${account.balance}`, "👋");
 }
 function clearCustomerCart() {
     currentCart = [];
@@ -1227,8 +1193,8 @@ function clearCustomerCart() {
     updateCartDisplay();
 }
 function checkoutCart() {
-    if (!currentCustomerAccount) return alert("No customer");
-    if (currentCart.length === 0) return alert("Cart empty");
+    if (!currentCustomerAccount) { showVVIPModal("Checkout Error", "No customer loaded.", "⚠️"); return; }
+    if (currentCart.length === 0) { showVVIPModal("Checkout Error", "Cart is empty.", "⚠️"); return; }
     let total = currentCart.reduce((s,i)=> s + i.price*i.quantity, 0);
     let personalBalance = currentCustomerAccount.balance;
     let tableBalance = currentCustomerTable ? currentCustomerTable.tabBalance : 0;
@@ -1244,7 +1210,7 @@ function checkoutCart() {
             usedPersonal = remaining;
             currentCustomerAccount.balance -= usedPersonal;
         } else {
-            alert(`Insufficient funds. Personal: R${personalBalance}, Table tab: R${tableBalance}, total: R${total}`);
+            showVVIPModal("Insufficient Funds", `Personal: R${personalBalance}<br>Table tab: R${tableBalance}<br>Total: R${total}`, "💸");
             return;
         }
     }
@@ -1261,7 +1227,6 @@ function checkoutCart() {
             quantity: item.quantity
         });
     });
-    // Create orders for vendors (active orders mode)
     let ordersByVendor = {};
     currentCart.forEach(item => {
         if (!ordersByVendor[item.vendor]) ordersByVendor[item.vendor] = [];
@@ -1286,38 +1251,14 @@ function checkoutCart() {
         localStorage.setItem(storageKey, JSON.stringify(existing));
     }
     saveAll();
-    showReceipt(total, usedTable, usedPersonal);
+    showVVIPModal("Purchase Complete", `Total: R${total}<br>From Table Tab: R${usedTable}<br>From Personal: R${usedPersonal}`, "🧾");
     clearCustomerCart();
     updateQuickStats();
     if (document.getElementById("dashboardModal").style.display === "flex") renderDashboard();
     if (document.getElementById("activeOrders").classList.contains("active")) renderActiveOrders();
 }
-function showReceipt(total, usedTable, usedPersonal) {
-    let receipt = document.createElement("div");
-    receipt.style.position = "fixed";
-    receipt.style.top = "50%";
-    receipt.style.left = "50%";
-    receipt.style.transform = "translate(-50%, -50%)";
-    receipt.style.background = "#1a1a1a";
-    receipt.style.border = "2px solid #b30000";
-    receipt.style.borderRadius = "28px";
-    receipt.style.padding = "25px";
-    receipt.style.zIndex = "3000";
-    receipt.style.width = "90%";
-    receipt.style.maxWidth = "400px";
-    receipt.style.boxShadow = "0 20px 40px rgba(0,0,0,0.5)";
-    receipt.innerHTML = `
-        <h3 style="color:#b30000;">🧾 PURCHASE COMPLETE</h3>
-        <p>Total: R${total}</p>
-        <p>From Table Tab: R${usedTable}</p>
-        <p>From Personal: R${usedPersonal}</p>
-        <button onclick="this.parentElement.remove()" style="margin-top:15px; padding:8px 20px; background:#b30000; border:none; border-radius:40px; color:white;">OK</button>
-    `;
-    document.body.appendChild(receipt);
-    setTimeout(() => receipt.remove(), 5000);
-}
 function showQuickCart() {
-    if (currentCart.length === 0) return alert("Cart empty");
+    if (currentCart.length === 0) { showVVIPModal("Empty Cart", "No items in cart.", "🛒"); return; }
     let modal = document.getElementById("quickCartModal");
     let container = document.getElementById("quickCartItems");
     let subtotal = 0;
@@ -1340,17 +1281,11 @@ function simulateBandScan() {
         let random = walletIds[Math.floor(Math.random() * walletIds.length)];
         document.getElementById("posBand").value = random;
         loadCustomerCart();
+    } else {
+        showVVIPModal("No Wallets", "Create test wallets first.", "⚠️");
     }
 }
-function switchToVVIP() {
-    document.getElementById("pos").classList.remove("active");
-    document.getElementById("gate").classList.add("active");
-    document.getElementById("activeOrders").classList.remove("active");
-    document.getElementById("statusText").innerText = "VVIP ACTIVE";
-    updateGateStats();
-}
 function switchToPOS() {
-    document.getElementById("gate").classList.remove("active");
     document.getElementById("pos").classList.add("active");
     document.getElementById("activeOrders").classList.remove("active");
     document.getElementById("statusText").innerText = "POS ACTIVE";
@@ -1358,7 +1293,6 @@ function switchToPOS() {
 }
 function switchToActiveOrders() {
     document.getElementById("pos").classList.remove("active");
-    document.getElementById("gate").classList.remove("active");
     document.getElementById("activeOrders").classList.add("active");
     document.getElementById("statusText").innerText = "ACTIVE ORDERS MODE";
     renderActiveOrders();
@@ -1389,68 +1323,27 @@ function renderActiveOrders() {
     let html = "";
     activeOrders.forEach(order => {
         let statusClass = "", statusText = "", readyClass = "";
-        
-        // Vendor-specific pending message
         let pendingMessage = "PENDING (Sent to kitchen)";
-        if (order.vendor === "Rands Smart Counter") {
-            pendingMessage = "PENDING (Sent to Smart Counters)";
-        } else if (order.vendor === "Shisha Lounge") {
-            pendingMessage = "PENDING (Sent to Shisha Lounge)";
-        } else if (order.vendor === "The Butcher Shop") {
-            pendingMessage = "PENDING (Sent to The Butcher Shop)";
-        }
-        
+        if (order.vendor === "Rands Smart Counter") pendingMessage = "PENDING (Sent to Smart Counters)";
+        else if (order.vendor === "Shisha Lounge") pendingMessage = "PENDING (Sent to Shisha Lounge)";
+        else if (order.vendor === "The Butcher Shop") pendingMessage = "PENDING (Sent to The Butcher Shop)";
         switch (order.status) {
-            case "pending": 
-                statusClass = "status-pending"; 
-                statusText = pendingMessage; 
-                break;
-            case "preparing": 
-                statusClass = "status-preparing"; 
-                statusText = "PREPARING"; 
-                break;
-            case "ready": 
-                statusClass = "status-ready"; 
-                statusText = "READY FOR COLLECTION"; 
-                readyClass = "ready"; 
-                break;
-            default: 
-                statusClass = ""; 
-                statusText = order.status;
+            case "pending": statusClass = "status-pending"; statusText = pendingMessage; break;
+            case "preparing": statusClass = "status-preparing"; statusText = "PREPARING"; break;
+            case "ready": statusClass = "status-ready"; statusText = "READY FOR COLLECTION"; readyClass = "ready"; break;
         }
-        
-        // Vendor icon
-        let vendorIcon = "";
-        if (order.vendor === "Rands Smart Counter") vendorIcon = "🍺";
-        else if (order.vendor === "Shisha Lounge") vendorIcon = "💨";
-        else if (order.vendor === "The Butcher Shop") vendorIcon = "🥩";
-        
-        html += `
-            <div class="active-order-card ${readyClass}">
-                <div class="active-order-header">
-                    <span class="active-order-id">#${order.orderId}</span>
-                    <span class="active-order-time">${order.timestamp}</span>
-                </div>
-                <div class="active-order-band">
-                    ${vendorIcon} <strong>${order.vendor}</strong> | Band: ${order.bandId}
-                </div>
-                <div class="status-badge ${statusClass}">${statusText}</div>
-                <div class="active-order-items">
-                    ${order.items.map(item => `
-                        <div class="active-order-item-row" style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #333;">
-                            <span>${item.quantity}x ${item.name}</span>
-                            <span>R${item.price * item.quantity}</span>
-                        </div>
-                    `).join('')}
-                </div>
-                <div class="active-order-total" style="text-align:right; font-size:20px; font-weight:bold; color:#00ff9c; margin:15px 0;">Total: R${order.total}</div>
-                <div class="active-order-actions">
-                    <button class="active-order-btn active-order-btn-collect" onclick="collectOrder(${order.orderId})" ${order.status !== "ready" ? "disabled" : ""}>
-                        ${order.status === "ready" ? "📦 COLLECT ORDER" : "⏳ WAITING"}
-                    </button>
-                </div>
-            </div>
-        `;
+        let vendorIcon = order.vendor === "Rands Smart Counter" ? "🍺" : order.vendor === "Shisha Lounge" ? "💨" : "🥩";
+        html += `<div class="active-order-card ${readyClass}">
+                    <div class="active-order-header">
+                        <span class="active-order-id">#${order.orderId}</span>
+                        <span class="active-order-time">${order.timestamp}</span>
+                    </div>
+                    <div class="active-order-band">${vendorIcon} <strong>${order.vendor}</strong> | Band: ${order.bandId}</div>
+                    <div class="status-badge ${statusClass}">${statusText}</div>
+                    <div class="active-order-items">${order.items.map(item => `<div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #333;"><span>${item.quantity}x ${item.name}</span><span>R${item.price * item.quantity}</span></div>`).join('')}</div>
+                    <div class="active-order-total" style="text-align:right; font-size:20px; font-weight:bold; color:#00ff9c; margin:15px 0;">Total: R${order.total}</div>
+                    <div class="active-order-actions"><button class="active-order-btn active-order-btn-collect" onclick="collectOrder(${order.orderId})" ${order.status !== "ready" ? "disabled" : ""}>${order.status === "ready" ? "📦 COLLECT ORDER" : "⏳ WAITING"}</button></div>
+                </div>`;
     });
     container.innerHTML = html;
     const justReady = activeOrders.some(o => o.status === "ready" && !window.lastReadyState);
@@ -1469,6 +1362,7 @@ function collectOrder(orderId) {
         let vendorOrders = JSON.parse(localStorage.getItem(vendorKey) || "[]");
         vendorOrders = vendorOrders.filter(o => o.orderId !== orderId);
         localStorage.setItem(vendorKey, JSON.stringify(vendorOrders));
+        showVVIPModal("Order Collected", `Order #${orderId} collected.`, "📦");
     }
 }
 function playNotificationSound() {
@@ -1507,7 +1401,7 @@ function renderDashboard() {
     if (!container) return;
     const tableEntries = Object.values(tables);
     if (tableEntries.length === 0) {
-        container.innerHTML = '<div style="text-align:center; padding:40px;">No tables created yet.</div>';
+        container.innerHTML = '<div style="text-align:center; padding:40px;">No tables created yet. Use the Dashboard in the main POS to create tables.</div>';
         return;
     }
     let html = `<table class="dashboard-table"><thead><tr><th>Table Name</th><th>Capacity</th><th>Current Guests</th><th>Remaining Tab</th><th>Tab Usage</th></tr></thead><tbody>`;
@@ -1516,15 +1410,7 @@ function renderDashboard() {
         const original = t.originalTab || t.tabBalance;
         const spent = original - t.tabBalance;
         const usedPercent = original > 0 ? (spent / original) * 100 : 0;
-        html += `
-            <tr>
-                <td><strong>${t.name}</strong></td>
-                <td>${t.capacity}</td>
-                <td>${t.entriesUsed} / ${t.capacity}</td>
-                <td style="color:#fff;">R${t.tabBalance}</td>
-                <td><div class="progress-bar"><div class="progress-fill" style="width: ${usedPercent}%;"></div></div><div style="font-size:12px;">R${spent} spent of R${original}</div></td>
-            </tr>
-        `;
+        html += `<tr><td><strong>${t.name}</strong></td><td>${t.capacity}</td><td>${t.entriesUsed} / ${t.capacity}</td><td style="color:#fff;">R${t.tabBalance}</td><td><div class="progress-bar"><div class="progress-fill" style="width: ${usedPercent}%;"></div></div><div style="font-size:12px;">R${spent} spent of R${original}</div></td></tr>`;
     }
     html += `</tbody></table>`;
     container.innerHTML = html;
@@ -1540,7 +1426,6 @@ if (nfcButton) {
                 await reader.scan();
                 nfcButton.textContent = '📡 Scanning...';
                 nfcButton.disabled = true;
-
                 reader.onreading = event => {
                     const record = event.message.records[0];
                     let walletId = '';
@@ -1554,22 +1439,21 @@ if (nfcButton) {
                     if (walletId) {
                         document.getElementById('posBand').value = walletId;
                         setTimeout(() => loadCustomerCart(), 500);
-                        alert(`NFC tag read: ${walletId}`);
+                        showVVIPModal("NFC Read", `Tag read: ${walletId}`, "📡");
                     } else {
-                        alert('No wallet ID found on tag');
+                        showVVIPModal("NFC Error", "No wallet ID found on tag", "⚠️");
                     }
                     reader.stop();
                     nfcButton.textContent = '📡 Tap NFC';
                     nfcButton.disabled = false;
                 };
                 reader.onreadingerror = () => {
-                    alert('Error reading NFC tag');
+                    showVVIPModal("NFC Error", "Error reading NFC tag", "⚠️");
                     nfcButton.textContent = '📡 Tap NFC';
                     nfcButton.disabled = false;
                 };
             } catch (error) {
-                console.error('NFC scan failed', error);
-                alert('NFC not supported or permission denied');
+                showVVIPModal("NFC Error", "Not supported or permission denied", "📡");
                 nfcButton.textContent = '📡 Tap NFC';
                 nfcButton.disabled = false;
             }
@@ -1585,8 +1469,6 @@ if (nfcButton) {
 // ==================== INITIALIZATION ====================
 updateVendorMenu();
 updateQuickStats();
-updateGateStats();
-renderTablesList();
 updateCartTitle();
 </script>
 </body>
