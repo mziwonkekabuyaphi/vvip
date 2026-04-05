@@ -21,7 +21,6 @@
             max-width: 1600px;
             margin: 0 auto;
         }
-        /* Premium Header */
         .premium-header {
             background: linear-gradient(135deg, #1a1a1a, #0f0f0f);
             border-radius: 32px;
@@ -77,7 +76,6 @@
             border-radius: 50%;
             animation: pulse 1.5s infinite;
         }
-        /* Navigation Tabs */
         .nav-tabs {
             display: flex;
             gap: 8px;
@@ -106,7 +104,6 @@
             background: #2a2a2a;
             color: #ff4d4d;
         }
-        /* Tab Content */
         .tab-content {
             display: none;
             animation: fadeIn 0.3s ease;
@@ -118,7 +115,6 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        /* Tables Grid */
         .tables-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
@@ -176,7 +172,6 @@
             display: inline-block;
             margin: 2px;
         }
-        /* Bands Table */
         .bands-table {
             width: 100%;
             border-collapse: collapse;
@@ -198,7 +193,6 @@
         .bands-table tr:hover {
             background: #222;
         }
-        /* Dashboard */
         .dashboard-stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -233,7 +227,6 @@
             background: #b30000;
             color: white;
         }
-        /* Orders Grid */
         .orders-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
@@ -319,7 +312,6 @@
             background: #00cc7a;
             transform: translateY(-2px);
         }
-        /* Create Table Form */
         .create-form {
             background: #111;
             padding: 20px;
@@ -355,7 +347,6 @@
             font-weight: 600;
             cursor: pointer;
         }
-        /* Transaction History Styles */
         .history-stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -442,7 +433,6 @@
             background: #111;
             border-radius: 24px;
         }
-        /* Modal */
         .vvip-modal {
             position: fixed;
             top: 0;
@@ -496,7 +486,6 @@
 </head>
 <body>
 <div class="container">
-    <!-- Premium Header -->
     <div class="premium-header">
         <div class="logo-area">
             <div class="logo-icon">👑</div>
@@ -511,7 +500,6 @@
         </div>
     </div>
 
-    <!-- Navigation Tabs - Includes History -->
     <div class="nav-tabs">
         <button class="nav-tab active" onclick="switchTab('tables')">📋 TABLES</button>
         <button class="nav-tab" onclick="switchTab('bands')">🖨️ BANDS</button>
@@ -520,7 +508,6 @@
         <button class="nav-tab" onclick="switchTab('history')">📜 HISTORY</button>
     </div>
 
-    <!-- TABLES TAB -->
     <div id="tablesTab" class="tab-content active">
         <div class="create-form">
             <div class="form-group">
@@ -540,28 +527,23 @@
         <div id="tablesList" class="tables-grid"></div>
     </div>
 
-    <!-- BANDS TAB -->
     <div id="bandsTab" class="tab-content">
         <div id="bandsListContainer"></div>
     </div>
 
-    <!-- DASHBOARD TAB -->
     <div id="dashboardTab" class="tab-content">
         <div id="dashboardContent"></div>
     </div>
 
-    <!-- ACTIVE ORDERS TAB -->
     <div id="ordersTab" class="tab-content">
         <div id="activeOrdersGrid" class="orders-grid"></div>
     </div>
 
-    <!-- TRANSACTION HISTORY TAB -->
     <div id="historyTab" class="tab-content">
         <div id="historyContent"></div>
     </div>
 </div>
 
-<!-- VVIP Modal -->
 <div id="vvipModal" class="vvip-modal">
     <div class="vvip-modal-card">
         <div class="vvip-modal-icon" id="modalIcon" style="font-size:64px;">👑</div>
@@ -572,9 +554,7 @@
 </div>
 
 <script>
-    // ==================== VVIP MANAGEMENT with TRANSACTION HISTORY ====================
-    // All data shared with main POS via localStorage - FULL SYNC
-    
+    // ==================== GLOBAL STATE ====================
     let walletAccounts = {};
     let tables = {};
     let revenue = 0;
@@ -582,6 +562,21 @@
     let globalOrders = [];
     let transactionHistory = [];
     let vendorSales = { "Rands Smart Counter":0, "Shisha Lounge":0, "The Butcher Shop":0 };
+    
+    // Helper: check if any input inside tables grid has focus (to prevent re-render while typing)
+    function isTablesGridInputFocused() {
+        const tablesGrid = document.getElementById('tablesList');
+        if (!tablesGrid) return false;
+        const activeElement = document.activeElement;
+        // Check if active element is inside tablesGrid and is an input or textarea
+        if (activeElement && tablesGrid.contains(activeElement)) {
+            const tagName = activeElement.tagName.toLowerCase();
+            if (tagName === 'input' || tagName === 'textarea') {
+                return true;
+            }
+        }
+        return false;
+    }
     
     function loadAll() {
         const walletsRaw = localStorage.getItem('rands_wallet_accounts');
@@ -622,7 +617,16 @@
     }
     function closeModal() { document.getElementById("vvipModal").classList.remove("active"); }
     
-    // ========== TABLES MANAGEMENT ==========
+    function escapeHtml(str) { 
+        return str.replace(/[&<>]/g, function(m) { 
+            if (m === '&') return '&amp;'; 
+            if (m === '<') return '&lt;'; 
+            if (m === '>') return '&gt;'; 
+            return m; 
+        }); 
+    }
+    
+    // ========== TABLES RENDERING (with focus preservation) ==========
     function renderTables() {
         const container = document.getElementById("tablesList");
         if (!container) return;
@@ -661,10 +665,8 @@
         }).join('');
     }
     
-    function escapeHtml(str) { return str.replace(/[&<>]/g, function(m) { if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; return m; }); }
-    
+    // ========== TABLE ACTIONS ==========
     function createTable() {
-        console.log("createTable called");
         const nameInput = document.getElementById("newTableName");
         const capacityInput = document.getElementById("newTableCapacity");
         const tabInput = document.getElementById("newTableTab");
@@ -682,7 +684,6 @@
             return;
         }
         
-        // Create new table
         tables[name] = {
             name: name,
             capacity: capacity,
@@ -691,20 +692,11 @@
             guests: [],
             originalTab: tab
         };
-        revenue += 2000;   // setup fee
-        
-        // Save to localStorage and sync
+        revenue += 2000;
         saveAll();
-        
-        // Re-render the tables view
         renderTables();
-        
         showModal("Table Created", `${name} created with R${tab} tab + R2000 setup fee`, "🎉");
-        
-        // Clear only the name field (capacity & tab stay as they were)
         nameInput.value = "";
-        
-        console.log("Table created successfully", tables);
     }
     
     function assignToTable(tableName) {
@@ -748,7 +740,7 @@
         }
     }
     
-    // ========== BANDS MANAGEMENT ==========
+    // ========== BANDS ==========
     function renderBands() {
         const container = document.getElementById("bandsListContainer");
         if (!container) return;
@@ -758,7 +750,7 @@
         }
         container.innerHTML = `
             <table class="bands-table">
-                <thead><tr><th>🆔 Wallet ID</th><th>👤 Name</th><th>💰 Balance</th><th>📋 Assigned Table</th><th>🖨️ Action</th></thead>
+                <thead><tr><th>🆔 Wallet ID</th><th>👤 Name</th><th>💰 Balance</th><th>📋 Assigned Table</th><th>🖨️ Action</th></tr></thead>
                 <tbody>
                     ${Object.entries(walletAccounts).map(([id, acc]) => `
                         <tr>
@@ -831,7 +823,7 @@
         `;
     }
     
-    // ========== ACTIVE ORDERS ==========
+    // ========== ORDERS ==========
     function renderOrders() {
         const container = document.getElementById("activeOrdersGrid");
         if (!container) return;
@@ -865,7 +857,7 @@
         }
     }
     
-    // ========== TRANSACTION HISTORY ==========
+    // ========== HISTORY ==========
     function renderHistory() {
         const container = document.getElementById("historyContent");
         if (!container) return;
@@ -924,37 +916,39 @@
         if (tab === 'history') renderHistory();
     }
     
-    // ========== INIT & REAL-TIME SYNC ==========
+    // ========== SYNC WITH FOCUS PROTECTION ==========
+    function safeRenderCurrentTab() {
+        // Do NOT re-render if the user is typing in a tables grid input
+        if (isTablesGridInputFocused()) {
+            return;
+        }
+        const activeTab = document.querySelector('.tab-content.active')?.id;
+        if (activeTab === 'tablesTab') renderTables();
+        else if (activeTab === 'bandsTab') renderBands();
+        else if (activeTab === 'dashboardTab') renderDashboard();
+        else if (activeTab === 'ordersTab') renderOrders();
+        else if (activeTab === 'historyTab') renderHistory();
+    }
+    
     function initSync() {
         loadAll();
-        renderTables();
-        renderBands();
-        renderDashboard();
-        renderOrders();
-        renderHistory();
+        safeRenderCurrentTab();
         
         if (window.BroadcastChannel) {
             const channel = new BroadcastChannel('vvip_sync');
             channel.onmessage = () => {
                 loadAll();
-                renderTables();
-                renderBands();
-                renderDashboard();
-                renderOrders();
-                renderHistory();
+                safeRenderCurrentTab();
             };
         }
         
         setInterval(() => {
             loadAll();
-            if (document.getElementById('tablesTab').classList.contains('active')) renderTables();
-            if (document.getElementById('bandsTab').classList.contains('active')) renderBands();
-            if (document.getElementById('dashboardTab').classList.contains('active')) renderDashboard();
-            if (document.getElementById('ordersTab').classList.contains('active')) renderOrders();
-            if (document.getElementById('historyTab').classList.contains('active')) renderHistory();
+            safeRenderCurrentTab();
         }, 3000);
     }
     
+    // Expose globals
     window.switchTab = switchTab;
     window.createTable = createTable;
     window.assignToTable = assignToTable;
