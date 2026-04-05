@@ -535,7 +535,7 @@
                 <label>💰 Tab Amount (R)</label>
                 <input type="number" id="newTableTab" placeholder="Initial tab" value="8000">
             </div>
-            <button class="create-btn" onclick="createTable()">+ CREATE TABLE</button>
+            <button type="button" class="create-btn" onclick="createTable()">+ CREATE TABLE</button>
         </div>
         <div id="tablesList" class="tables-grid"></div>
     </div>
@@ -664,17 +664,47 @@
     function escapeHtml(str) { return str.replace(/[&<>]/g, function(m) { if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; return m; }); }
     
     function createTable() {
-        let name = document.getElementById("newTableName").value.trim();
-        let capacity = parseInt(document.getElementById("newTableCapacity").value);
-        let tab = parseInt(document.getElementById("newTableTab").value);
-        if (!name || capacity < 1) { showModal("Error", "Valid name and capacity required", "⚠️"); return; }
-        if (tables[name]) { showModal("Duplicate", "Table already exists", "⚠️"); return; }
-        tables[name] = { name, capacity, tabBalance: tab, entriesUsed: 0, guests: [], originalTab: tab };
-        revenue += 2000;
+        console.log("createTable called");
+        const nameInput = document.getElementById("newTableName");
+        const capacityInput = document.getElementById("newTableCapacity");
+        const tabInput = document.getElementById("newTableTab");
+        
+        let name = nameInput.value.trim();
+        let capacity = parseInt(capacityInput.value);
+        let tab = parseInt(tabInput.value);
+        
+        if (!name || capacity < 1) {
+            showModal("Error", "Valid name and capacity required", "⚠️");
+            return;
+        }
+        if (tables[name]) {
+            showModal("Duplicate", "Table already exists", "⚠️");
+            return;
+        }
+        
+        // Create new table
+        tables[name] = {
+            name: name,
+            capacity: capacity,
+            tabBalance: tab,
+            entriesUsed: 0,
+            guests: [],
+            originalTab: tab
+        };
+        revenue += 2000;   // setup fee
+        
+        // Save to localStorage and sync
         saveAll();
+        
+        // Re-render the tables view
         renderTables();
+        
         showModal("Table Created", `${name} created with R${tab} tab + R2000 setup fee`, "🎉");
-        document.getElementById("newTableName").value = "";
+        
+        // Clear only the name field (capacity & tab stay as they were)
+        nameInput.value = "";
+        
+        console.log("Table created successfully", tables);
     }
     
     function assignToTable(tableName) {
@@ -728,7 +758,7 @@
         }
         container.innerHTML = `
             <table class="bands-table">
-                <thead><tr><th>🆔 Wallet ID</th><th>👤 Name</th><th>💰 Balance</th><th>📋 Assigned Table</th><th>🖨️ Action</th></tr></thead>
+                <thead><tr><th>🆔 Wallet ID</th><th>👤 Name</th><th>💰 Balance</th><th>📋 Assigned Table</th><th>🖨️ Action</th></thead>
                 <tbody>
                     ${Object.entries(walletAccounts).map(([id, acc]) => `
                         <tr>
