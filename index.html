@@ -3,14 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-  <title>Rands Vibe Hub | Command Center</title>
-  <meta name="description" content="Central hub for VVIP Tab, Butcher Orders, Shisha Lounge & Smart Counter">
+  <title>VVIP Access | Rands Vibe Pass</title>
+  <meta name="description" content="Exclusive VVIP login portal for Rands Vibe Pass premium members">
   <meta name="theme-color" content="#E31B23">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Rands Hub">
   
-  <!-- Font Awesome 6 (free icons) -->
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <style>
@@ -21,67 +19,93 @@
     }
 
     body {
-      font-family: 'Segoe UI', system-ui, -apple-system, 'Inter', 'Poppins', sans-serif;
-      background: radial-gradient(circle at 10% 20%, #1a0c0c, #2a0a0a, #0f0505);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
       min-height: 100vh;
-      padding: 2rem 1.5rem;
-      position: relative;
+      background: radial-gradient(ellipse at 20% 30%, #0a0508, #1a0a0f, #2d0f12);
       overflow-x: hidden;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
     }
 
-    /* Animated grain texture */
-    body::before {
-      content: "";
+    /* Animated particles background */
+    .particles {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-      pointer-events: none;
       z-index: 0;
+      pointer-events: none;
+    }
+    .particle {
+      position: absolute;
+      background: rgba(227, 27, 35, 0.4);
+      border-radius: 50%;
+      filter: blur(2px);
+      animation: floatParticle linear infinite;
+    }
+    @keyframes floatParticle {
+      0% { transform: translateY(100vh) translateX(0) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.8; }
+      90% { opacity: 0.5; }
+      100% { transform: translateY(-20vh) translateX(40px) rotate(360deg); opacity: 0; }
     }
 
-    /* subtle ambient glow orbs */
+    /* Glowing orbs */
     .glow-orb {
       position: fixed;
       border-radius: 50%;
-      filter: blur(80px);
+      filter: blur(100px);
       opacity: 0.3;
       z-index: 0;
       pointer-events: none;
     }
-    .orb1 { width: 400px; height: 400px; background: #E31B23; top: -150px; left: -100px; }
-    .orb2 { width: 500px; height: 500px; background: #ff7b2c; bottom: -200px; right: -150px; opacity: 0.2; }
-    .orb3 { width: 300px; height: 300px; background: #f5a623; top: 40%; left: 70%; opacity: 0.15; }
+    .orb1 { width: 500px; height: 500px; background: #E31B23; top: -200px; left: -150px; }
+    .orb2 { width: 450px; height: 450px; background: #ff6a4b; bottom: -150px; right: -100px; opacity: 0.2; }
+    .orb3 { width: 350px; height: 350px; background: #f5a623; top: 50%; left: 60%; opacity: 0.15; }
 
-    .hub-container {
-      max-width: 1400px;
-      margin: 0 auto;
+    /* Main container */
+    .login-container {
       position: relative;
-      z-index: 2;
+      z-index: 10;
+      width: 100%;
+      max-width: 500px;
+      animation: fadeInScale 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1);
     }
 
-    /* header with premium vibe & logo image */
-    .hub-header {
+    @keyframes fadeInScale {
+      from { opacity: 0; transform: scale(0.95) translateY(20px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    /* Premium card */
+    .login-card {
+      background: rgba(15, 8, 12, 0.65);
+      backdrop-filter: blur(20px);
+      border-radius: 3rem;
+      padding: 2.5rem 2rem;
+      border: 1px solid rgba(227, 27, 35, 0.4);
+      box-shadow: 0 30px 50px -20px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255,255,255,0.1);
+      transition: all 0.3s ease;
+    }
+
+    /* Logo section with actual image */
+    .logo-section {
       text-align: center;
-      margin-bottom: 3.5rem;
-      animation: fadeSlideDown 0.7s ease-out;
+      margin-bottom: 2rem;
     }
-
-    /* Logo styling */
     .brand-logo {
-      display: inline-flex;
+      width: 90px;
+      height: 90px;
+      margin: 0 auto 1rem;
+      display: flex;
       align-items: center;
       justify-content: center;
-      width: 100px;
-      height: 100px;
-      margin-bottom: 20px;
       filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));
-      transition: transform 0.25s ease;
-    }
-    .brand-logo:hover {
-      transform: scale(1.02);
+      animation: subtleGlow 3s ease-in-out infinite;
     }
     .brand-logo img {
       width: 100%;
@@ -91,351 +115,429 @@
       background: linear-gradient(145deg, rgba(227,27,35,0.2), rgba(0,0,0,0.1));
       padding: 6px;
     }
-    
-    .hub-header h1 {
-      font-size: 2.8rem;
-      font-weight: 800;
-      background: linear-gradient(135deg, #FFF6E5, #FFD9C5, #FFB085);
+    @keyframes subtleGlow {
+      0%, 100% { filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3)); }
+      50% { filter: drop-shadow(0 10px 30px rgba(227,27,35,0.5)); }
+    }
+    .logo-section h2 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #FFE6D5, #FFB88C);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      letter-spacing: -0.5px;
-      text-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      letter-spacing: -0.3px;
+      margin-top: 0.5rem;
     }
-    .hub-header .badge {
-      background: rgba(255,255,255,0.12);
-      backdrop-filter: blur(8px);
+    .vip-badge {
       display: inline-block;
-      padding: 8px 22px;
-      border-radius: 60px;
-      margin-top: 16px;
-      font-size: 0.85rem;
+      background: rgba(227,27,35,0.25);
+      backdrop-filter: blur(4px);
+      padding: 4px 14px;
+      border-radius: 40px;
+      font-size: 0.7rem;
       font-weight: 600;
-      color: #ffded5;
-      border: 1px solid rgba(227,27,35,0.5);
-      letter-spacing: 0.5px;
+      color: #ffba9f;
+      margin-top: 10px;
+      border: 1px solid rgba(227,27,35,0.4);
     }
-    .hub-header .badge i {
+    .vip-badge i {
       margin-right: 6px;
-      font-size: 0.8rem;
+      font-size: 0.65rem;
     }
 
-    /* dashboard card grid */
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 2rem;
-      margin-top: 1rem;
+    /* Form styling */
+    .input-group {
+      margin-bottom: 1.5rem;
+      position: relative;
     }
-
-    /* premium card design */
-    .hub-card {
-      background: rgba(20, 12, 12, 0.65);
-      backdrop-filter: blur(12px);
+    .input-icon {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #ffaa88;
+      font-size: 1.1rem;
+      z-index: 2;
+      opacity: 0.8;
+    }
+    .input-field {
+      width: 100%;
+      background: rgba(25, 15, 20, 0.7);
+      border: 1.5px solid rgba(227, 27, 35, 0.3);
       border-radius: 2rem;
-      padding: 1.8rem 1.5rem 2rem;
-      transition: all 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      padding: 1rem 1rem 1rem 3rem;
+      font-size: 1rem;
+      font-weight: 500;
+      color: #fff4ea;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.25s ease;
+      outline: none;
+    }
+    .input-field:focus {
+      border-color: #E31B23;
+      box-shadow: 0 0 0 3px rgba(227,27,35,0.2);
+      background: rgba(30, 18, 22, 0.8);
+    }
+    .input-field::placeholder {
+      color: rgba(255, 210, 180, 0.5);
+      font-weight: 400;
+    }
+
+    /* Toggle password visibility */
+    .toggle-password {
+      position: absolute;
+      right: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #ffaa88;
       cursor: pointer;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.4);
+      font-size: 1rem;
+      transition: color 0.2s;
+      z-index: 2;
+    }
+    .toggle-password:hover {
+      color: #E31B23;
+    }
+
+    /* Login button */
+    .login-btn {
+      width: 100%;
+      background: linear-gradient(95deg, #E31B23, #b8121a);
+      border: none;
+      border-radius: 2rem;
+      padding: 1rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: white;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      margin-top: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 8px 20px -6px rgba(227,27,35,0.5);
+    }
+    .login-btn i {
+      transition: transform 0.2s;
+    }
+    .login-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 25px -8px rgba(227,27,35,0.7);
+      background: linear-gradient(95deg, #ff2a33, #d4151d);
+    }
+    .login-btn:active {
+      transform: translateY(1px);
+    }
+    .login-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Error message */
+    .error-message {
+      background: rgba(227, 27, 35, 0.15);
+      border-left: 3px solid #E31B23;
+      border-radius: 1rem;
+      padding: 0.8rem 1rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.85rem;
+      color: #ffb7a7;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      backdrop-filter: blur(4px);
+      transform: translateX(0);
+      transition: all 0.2s;
+    }
+    .error-message i {
+      font-size: 1rem;
+      color: #E31B23;
+    }
+
+    /* Security note */
+    .security-note {
       text-align: center;
+      margin-top: 2rem;
+      font-size: 0.7rem;
+      color: rgba(255, 210, 180, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .security-note span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .security-note i {
+      font-size: 0.65rem;
+    }
+
+    /* fingerprint animation */
+    .fingerprint-area {
+      display: flex;
+      justify-content: center;
+      margin-top: 1rem;
+      opacity: 0.5;
+      transition: opacity 0.2s;
+    }
+    .fingerprint-area i {
+      font-size: 1.5rem;
+      color: #ffaa88;
+    }
+
+    /* Responsive */
+    @media (max-width: 550px) {
+      .login-card { padding: 1.8rem 1.5rem; border-radius: 2rem; }
+      .logo-section h2 { font-size: 1.5rem; }
+      .brand-logo { width: 70px; height: 70px; }
+    }
+
+    /* Shine effect on card */
+    .login-card {
       position: relative;
       overflow: hidden;
     }
-    .hub-card::after {
+    .login-card::before {
       content: '';
       position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
-      transition: left 0.6s ease;
-    }
-    .hub-card:hover::after {
-      left: 100%;
-    }
-    .hub-card:hover {
-      transform: translateY(-8px) scale(1.01);
-      border-color: rgba(227,27,35,0.6);
-      box-shadow: 0 30px 40px -16px rgba(0,0,0,0.5);
-      background: rgba(30, 18, 18, 0.8);
-    }
-    
-    /* Active/click feedback */
-    .hub-card:active {
-      transform: scale(0.97);
-      transition: transform 0.05s;
-    }
-
-    /* card icon glam */
-    .card-icon {
-      width: 85px;
-      height: 85px;
-      background: linear-gradient(145deg, #2a1818, #1f0f0f);
-      border-radius: 30px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 1.5rem;
-      box-shadow: inset 0 1px 2px rgba(255,255,255,0.1), 0 12px 20px -8px black;
-      transition: all 0.25s;
-    }
-    .hub-card:hover .card-icon {
-      background: linear-gradient(145deg, #E31B23, #b1121a);
-      transform: scale(1.02);
-    }
-    .card-icon i {
-      font-size: 3rem;
-      color: #ffcfb5;
-      transition: transform 0.2s;
-    }
-    .hub-card:hover .card-icon i {
-      transform: scale(1.05);
-      color: white;
-    }
-
-    .hub-card h3 {
-      font-size: 1.8rem;
-      font-weight: 700;
-      margin-bottom: 0.6rem;
-      background: linear-gradient(120deg, #fff, #ffcdb0);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
-    .card-desc {
-      color: #d9cfc3;
-      font-weight: 500;
-      margin-bottom: 1.4rem;
-      font-size: 0.9rem;
-      opacity: 0.9;
-    }
-    .card-meta {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      background: rgba(227,27,35,0.25);
-      padding: 6px 16px;
-      border-radius: 60px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: #ffc7b3;
-      backdrop-filter: blur(4px);
-    }
-    .card-meta i {
-      font-size: 0.7rem;
-    }
-
-    /* special accent for each card */
-    .card-vvip .card-icon { box-shadow: 0 0 0 2px rgba(227,27,35,0.3); }
-    .card-butcher .card-icon { box-shadow: 0 0 0 2px rgba(255,110,64,0.3);}
-    .card-shisha .card-icon { box-shadow: 0 0 0 2px rgba(210,140,69,0.3);}
-    .card-smart .card-icon { box-shadow: 0 0 0 2px rgba(90,200,150,0.3);}
-
-    /* floating status */
-    .live-status {
-      margin-top: 3rem;
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      flex-wrap: wrap;
-      font-size: 0.8rem;
-      font-weight: 500;
-    }
-    .status-chip {
-      background: rgba(0,0,0,0.5);
-      backdrop-filter: blur(12px);
-      padding: 6px 18px;
-      border-radius: 40px;
-      color: #ffbfa0;
-      border-left: 2px solid #E31B23;
-    }
-    .status-chip i {
-      margin-right: 6px;
-      font-size: 0.7rem;
-      color: #ff9770;
-    }
-
-    /* footer */
-    .footer-note {
-      margin-top: 3rem;
-      text-align: center;
-      font-size: 0.7rem;
-      color: #b19b8b;
-      letter-spacing: 0.5px;
-    }
-
-    @keyframes fadeSlideDown {
-      from { opacity: 0; transform: translateY(-25px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* responsive */
-    @media (max-width: 750px) {
-      body { padding: 1.5rem 1rem; }
-      .hub-header h1 { font-size: 2rem; }
-      .hub-card h3 { font-size: 1.5rem; }
-      .card-icon { width: 70px; height: 70px; }
-      .card-icon i { font-size: 2.3rem; }
-      .brand-logo { width: 75px; height: 75px; }
-    }
-
-    @media (max-width: 500px) {
-      .dashboard-grid { gap: 1.2rem; }
-      .hub-card { padding: 1.3rem 1rem; }
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%);
+      pointer-events: none;
     }
   </style>
 </head>
 <body>
+  <div class="particles" id="particles"></div>
   <div class="glow-orb orb1"></div>
   <div class="glow-orb orb2"></div>
   <div class="glow-orb orb3"></div>
 
-  <div class="hub-container">
-    <div class="hub-header">
-      <!-- Logo using images/rands-logo.png -->
-      <div class="brand-logo">
-        <img src="images/rands-logo.png" alt="Rands Vibe Pass | Logo">
-      </div>
-      <h1>Rands Vibe Hub</h1>
-      <div class="badge">
-        <i class="fas fa-bolt"></i> COMMAND CENTER · REAL-TIME ORDERS
-      </div>
-    </div>
-
-    <div class="dashboard-grid">
-      <!-- VVIP TAB CARD -->
-      <div class="hub-card card-vvip" data-url="vvip-tab.html">
-        <div class="card-icon">
-          <i class="fas fa-gem"></i>
+  <div class="login-container">
+    <div class="login-card">
+      <div class="logo-section">
+        <!-- UPDATED LOGO: using images/rands-logo.png -->
+        <div class="brand-logo">
+          <img src="images/rands-logo.png" alt="Rands Vibe Pass | VVIP Logo">
         </div>
-        <h3>VVIP Tab</h3>
-        <div class="card-desc">Exclusive table management · Premium tabs & bottle service</div>
-        <div class="card-meta">
-          <i class="fas fa-chart-line"></i> Live VVIP Dashboard
-          <i class="fas fa-arrow-right" style="margin-left: 6px;"></i>
+        <h2>VVIP Access Portal</h2>
+        <div class="vip-badge">
+          <i class="fas fa-shield-alt"></i> RESTRICTED AREA
         </div>
       </div>
 
-      <!-- BUTCHER ORDERS CARD -->
-      <div class="hub-card card-butcher" data-url="butcher-orders.html">
-        <div class="card-icon">
-          <i class="fas fa-utensils"></i>
-        </div>
-        <h3>Butcher Orders</h3>
-        <div class="card-desc">Premium meat cuts · Grill station & kitchen workflow</div>
-        <div class="card-meta">
-          <i class="fas fa-fire"></i> Active orders
-          <i class="fas fa-arrow-right" style="margin-left: 6px;"></i>
-        </div>
+      <!-- Error message container -->
+      <div id="errorBox" class="error-message" style="display: none;">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span id="errorText">Invalid credentials</span>
       </div>
 
-      <!-- SHISHA LOUNGE ORDERS CARD -->
-      <div class="hub-card card-shisha" data-url="shisha-orders.html">
-        <div class="card-icon">
-          <i class="fas fa-smoking"></i>
+      <!-- Login Form -->
+      <form id="vvipLoginForm" autocomplete="off">
+        <div class="input-group">
+          <i class="fas fa-user input-icon"></i>
+          <input type="text" id="username" class="input-field" placeholder="VVIP Username" autocomplete="off" value="">
         </div>
-        <h3>Shisha Lounge</h3>
-        <div class="card-desc">Flavor mixes · Coal management · Lounge experience</div>
-        <div class="card-meta">
-          <i class="fas fa-leaf"></i> Lounge orders
-          <i class="fas fa-arrow-right" style="margin-left: 6px;"></i>
-        </div>
-      </div>
 
-      <!-- SMART COUNTER ORDERS CARD -->
-      <div class="hub-card card-smart" data-url="smart-counter-orders.html">
-        <div class="card-icon">
-          <i class="fas fa-microchip"></i>
+        <div class="input-group">
+          <i class="fas fa-lock input-icon"></i>
+          <input type="password" id="password" class="input-field" placeholder="Password" autocomplete="off">
+          <button type="button" id="togglePassBtn" class="toggle-password">
+            <i class="far fa-eye-slash"></i>
+          </button>
         </div>
-        <h3>Smart Counter</h3>
-        <div class="card-desc">Automated POS · Real-time billing & inventory sync</div>
-        <div class="card-meta">
-          <i class="fas fa-charging-station"></i> Smart analytics
-          <i class="fas fa-arrow-right" style="margin-left: 6px;"></i>
-        </div>
-      </div>
-    </div>
 
-    <div class="live-status">
-      <div class="status-chip"><i class="fas fa-sync-alt fa-fw"></i> Live sync: VVIP · Butcher · Shisha · Smart</div>
-      <div class="status-chip"><i class="fas fa-shield-alt"></i> Encrypted hub access</div>
-      <div class="status-chip"><i class="fas fa-clock"></i> Instant redirect · Zero latency</div>
-    </div>
-    <div class="footer-note">
-      <i class="fas fa-fingerprint"></i> Rands Vibe ecosystem — Seamless order management
+        <button type="submit" id="loginButton" class="login-btn">
+          <i class="fas fa-key"></i> <span>Authenticate Access</span>
+        </button>
+      </form>
+
+      <div class="fingerprint-area">
+        <i class="fas fa-fingerprint"></i>
+      </div>
+      <div class="security-note">
+        <span><i class="fas fa-lock"></i> Encrypted session</span>
+        <span><i class="fas fa-clock"></i> Session timeout: 8 hours</span>
+        <span><i class="fas fa-id-card"></i> VVIP only</span>
+      </div>
     </div>
   </div>
 
   <script>
-    // SIMPLE WORKING REDIRECT - No complicated overrides
     (function() {
-      // Get all cards
-      const cards = document.querySelectorAll('.hub-card');
-      
-      // Add click handler to each card
-      cards.forEach(function(card) {
-        card.addEventListener('click', function(e) {
-          // Stop any propagation
-          e.stopPropagation();
-          
-          // Get the redirect URL from data-url attribute
-          const redirectUrl = card.getAttribute('data-url');
-          
-          console.log('Card clicked! Redirecting to:', redirectUrl);
-          
-          if (redirectUrl) {
-            // Add visual feedback before redirect
-            card.style.transform = 'scale(0.97)';
-            card.style.transition = 'transform 0.05s';
-            
-            // Create flash overlay
-            const overlay = document.createElement('div');
-            overlay.style.position = 'fixed';
-            overlay.style.top = '0';
-            overlay.style.left = '0';
-            overlay.style.width = '100%';
-            overlay.style.height = '100%';
-            overlay.style.backgroundColor = '#E31B23';
-            overlay.style.opacity = '0';
-            overlay.style.transition = 'opacity 0.15s ease';
-            overlay.style.zIndex = '9999';
-            overlay.style.pointerEvents = 'none';
-            document.body.appendChild(overlay);
-            
-            // Trigger flash
-            setTimeout(function() {
-              overlay.style.opacity = '0.6';
-            }, 10);
-            
-            // Redirect after flash
-            setTimeout(function() {
-              window.location.href = redirectUrl;
-            }, 150);
-          } else {
-            console.error('No data-url attribute found on card');
-            alert('Route not configured. Please check the card configuration.');
-          }
-        });
-        
-        // Add cursor style to indicate clickable
-        card.style.cursor = 'pointer';
-        
-        // Add touch feedback for mobile
-        card.addEventListener('touchstart', function() {
-          card.style.transform = 'scale(0.97)';
-        });
-        
-        card.addEventListener('touchend', function() {
-          setTimeout(function() {
-            card.style.transform = '';
-          }, 100);
-        });
+      // VVIP credentials (case-sensitive as per requirements)
+      const VALID_USERNAME = "VVIP";
+      const VALID_PASSWORD = "randscapetown";
+
+      // DOM elements
+      const usernameInput = document.getElementById('username');
+      const passwordInput = document.getElementById('password');
+      const loginForm = document.getElementById('vvipLoginForm');
+      const loginBtn = document.getElementById('loginButton');
+      const errorBox = document.getElementById('errorBox');
+      const errorText = document.getElementById('errorText');
+      const togglePassBtn = document.getElementById('togglePassBtn');
+
+      // Helper: Show error message
+      function showError(message) {
+        errorText.innerText = message;
+        errorBox.style.display = 'flex';
+        // Auto hide after 4 seconds
+        setTimeout(() => {
+          if (errorBox) errorBox.style.display = 'none';
+        }, 4000);
+      }
+
+      // Helper: Hide error
+      function hideError() {
+        errorBox.style.display = 'none';
+      }
+
+      // Toggle password visibility
+      let isPasswordVisible = false;
+      togglePassBtn.addEventListener('click', () => {
+        isPasswordVisible = !isPasswordVisible;
+        passwordInput.type = isPasswordVisible ? 'text' : 'password';
+        const icon = togglePassBtn.querySelector('i');
+        if (isPasswordVisible) {
+          icon.classList.remove('fa-eye-slash');
+          icon.classList.add('fa-eye');
+        } else {
+          icon.classList.remove('fa-eye');
+          icon.classList.add('fa-eye-slash');
+        }
       });
+
+      // Simulate loading state on button
+      function setLoading(isLoading) {
+        if (isLoading) {
+          loginBtn.disabled = true;
+          loginBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> <span>Verifying VVIP...</span>';
+        } else {
+          loginBtn.disabled = false;
+          loginBtn.innerHTML = '<i class="fas fa-key"></i> <span>Authenticate Access</span>';
+        }
+      }
+
+      // Create flash transition before redirect to vvip-tab.html
+      function flashAndRedirectToVVIPTab() {
+        // Create overlay flash effect for premium feel
+        const overlay = document.createElement('div');
+        overlay.style.position = 'fixed';
+        overlay.style.top = '0';
+        overlay.style.left = '0';
+        overlay.style.width = '100%';
+        overlay.style.height = '100%';
+        overlay.style.backgroundColor = '#E31B23';
+        overlay.style.opacity = '0';
+        overlay.style.transition = 'opacity 0.2s ease';
+        overlay.style.zIndex = '99999';
+        overlay.style.pointerEvents = 'none';
+        document.body.appendChild(overlay);
+        
+        setTimeout(() => { overlay.style.opacity = '0.7'; }, 10);
+        setTimeout(() => {
+          // Set authentication flag for session
+          sessionStorage.setItem('rands_vibe_authenticated', 'true');
+          // Store timestamp for session expiry
+          sessionStorage.setItem('vvip_auth_time', Date.now().toString());
+          // Clear any pending redirect flags to avoid loops
+          sessionStorage.removeItem('vvip_redirect_after_login');
+          
+          // REDIRECT DIRECTLY TO VVIP-TAB.HTML as requested
+          window.location.href = 'vvip-tab.html';
+        }, 200);
+      }
+
+      // Process login
+      function attemptLogin(event) {
+        if (event) event.preventDefault();
+        
+        hideError();
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value;
+        
+        // Basic validation
+        if (!username || !password) {
+          showError('Please enter both VVIP username and password');
+          return;
+        }
+        
+        // Strict credential check
+        if (username === VALID_USERNAME && password === VALID_PASSWORD) {
+          // Success - premium haptic feedback
+          setLoading(true);
+          
+          // Small delay for dramatic effect & show loading
+          setTimeout(() => {
+            flashAndRedirectToVVIPTab();
+          }, 600);
+        } else {
+          // Failed attempt
+          showError('Access Denied. Invalid VVIP credentials.');
+          // Shake effect on card for better UX
+          const card = document.querySelector('.login-card');
+          card.style.transform = 'translateX(0)';
+          card.style.transition = '0.1s';
+          card.style.transform = 'translateX(6px)';
+          setTimeout(() => { card.style.transform = 'translateX(-4px)'; }, 80);
+          setTimeout(() => { card.style.transform = 'translateX(2px)'; }, 160);
+          setTimeout(() => { card.style.transform = 'translateX(0)'; }, 240);
+          // Clear password field for security
+          passwordInput.value = '';
+          passwordInput.focus();
+        }
+      }
+
+      // Attach submit listener
+      loginForm.addEventListener('submit', attemptLogin);
       
-      console.log('✅ Hub ready - Cards are clickable! Redirects to: vvip-tab.html, butcher-orders.html, shisha-orders.html, smart-counter-orders.html');
-      console.log('📁 Logo path: images/rands-logo.png');
+      // Add floating particles background
+      function createParticles() {
+        const particlesContainer = document.getElementById('particles');
+        const particleCount = 60;
+        for (let i = 0; i < particleCount; i++) {
+          const particle = document.createElement('div');
+          particle.classList.add('particle');
+          const size = Math.random() * 6 + 2;
+          particle.style.width = `${size}px`;
+          particle.style.height = `${size}px`;
+          particle.style.left = `${Math.random() * 100}%`;
+          particle.style.animationDuration = `${Math.random() * 8 + 6}s`;
+          particle.style.animationDelay = `${Math.random() * 5}s`;
+          particle.style.opacity = Math.random() * 0.5 + 0.2;
+          particlesContainer.appendChild(particle);
+        }
+      }
+      createParticles();
+      
+      // Auto focus on username
+      usernameInput.focus();
+      
+      // Check if already authenticated - if yes, redirect straight to vvip-tab.html
+      const alreadyAuth = sessionStorage.getItem('rands_vibe_authenticated') === 'true';
+      if (alreadyAuth && window.location.pathname.includes('login.html')) {
+        // If already logged in but on login page, auto redirect to VVIP tab after 1 second
+        setTimeout(() => {
+          window.location.href = 'vvip-tab.html';
+        }, 800);
+      }
+      
+      // Console log for dev
+      console.log('✅ VVIP Login Portal Ready | Credentials: VVIP / randscapetown');
+      console.log('✅ Logo path: images/rands-logo.png');
+      console.log('✅ After successful login → redirecting to vvip-tab.html');
     })();
   </script>
 </body>
