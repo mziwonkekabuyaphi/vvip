@@ -69,7 +69,7 @@
       animation: fadeSlideDown 0.7s ease-out;
     }
 
-    /* ----- UPDATED LOGO SECTION: uses images/rands-logo2.png ----- */
+    /* Logo styling */
     .brand-logo {
       display: inline-flex;
       align-items: center;
@@ -161,6 +161,12 @@
       box-shadow: 0 30px 40px -16px rgba(0,0,0,0.5);
       background: rgba(30, 18, 18, 0.8);
     }
+    
+    /* Active/click feedback */
+    .hub-card:active {
+      transform: scale(0.97);
+      transition: transform 0.05s;
+    }
 
     /* card icon glam */
     .card-icon {
@@ -221,7 +227,7 @@
       font-size: 0.7rem;
     }
 
-    /* special accent for each card (subtle) */
+    /* special accent for each card */
     .card-vvip .card-icon { box-shadow: 0 0 0 2px rgba(227,27,35,0.3); }
     .card-butcher .card-icon { box-shadow: 0 0 0 2px rgba(255,110,64,0.3);}
     .card-shisha .card-icon { box-shadow: 0 0 0 2px rgba(210,140,69,0.3);}
@@ -279,28 +285,6 @@
       .dashboard-grid { gap: 1.2rem; }
       .hub-card { padding: 1.3rem 1rem; }
     }
-
-    /* loading ripple effect on click */
-    .ripple-effect {
-      position: relative;
-      overflow: hidden;
-    }
-    .ripple-effect:active:after {
-      content: "";
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 120%;
-      height: 120%;
-      background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 70%);
-      transform: translate(-50%, -50%) scale(0);
-      border-radius: 50%;
-      animation: rippleAnim 0.5s ease-out;
-      pointer-events: none;
-    }
-    @keyframes rippleAnim {
-      to { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
-    }
   </style>
 </head>
 <body>
@@ -310,9 +294,9 @@
 
   <div class="hub-container">
     <div class="hub-header">
-      <!-- UPDATED LOGO: using correct images/rands-logo2.png -->
+      <!-- Logo using images/rands-logo.png -->
       <div class="brand-logo">
-        <img src="images/rands-logo2.png" alt="Rands Vibe Pass | Logo">
+        <img src="images/rands-logo.png" alt="Rands Vibe Pass | Logo">
       </div>
       <h1>Rands Vibe Hub</h1>
       <div class="badge">
@@ -322,7 +306,7 @@
 
     <div class="dashboard-grid">
       <!-- VVIP TAB CARD -->
-      <div class="hub-card card-vvip ripple-effect" data-url="vvip-tab.html" data-name="VVIP Tab">
+      <div class="hub-card card-vvip" data-url="vvip-tab.html">
         <div class="card-icon">
           <i class="fas fa-gem"></i>
         </div>
@@ -335,7 +319,7 @@
       </div>
 
       <!-- BUTCHER ORDERS CARD -->
-      <div class="hub-card card-butcher ripple-effect" data-url="butcher-orders.html" data-name="Butcher Orders">
+      <div class="hub-card card-butcher" data-url="butcher-orders.html">
         <div class="card-icon">
           <i class="fas fa-utensils"></i>
         </div>
@@ -348,7 +332,7 @@
       </div>
 
       <!-- SHISHA LOUNGE ORDERS CARD -->
-      <div class="hub-card card-shisha ripple-effect" data-url="shisha-orders.html" data-name="Shisha Lounge">
+      <div class="hub-card card-shisha" data-url="shisha-orders.html">
         <div class="card-icon">
           <i class="fas fa-smoking"></i>
         </div>
@@ -361,7 +345,7 @@
       </div>
 
       <!-- SMART COUNTER ORDERS CARD -->
-      <div class="hub-card card-smart ripple-effect" data-url="smart-counter-orders.html" data-name="Smart Counter">
+      <div class="hub-card card-smart" data-url="smart-counter-orders.html">
         <div class="card-icon">
           <i class="fas fa-microchip"></i>
         </div>
@@ -385,181 +369,73 @@
   </div>
 
   <script>
+    // SIMPLE WORKING REDIRECT - No complicated overrides
     (function() {
-      // ========== HUB REDIRECT LOGIC ==========
-      // This hub page redirects respectively to:
-      // - vvip-tab.html
-      // - butcher-orders.html
-      // - shisha-orders.html
-      // - smart-counter-orders.html
-      // With smooth transition, click & optional keyboard/gesture.
-
-      // Helper: perform redirect with subtle visual feedback before leaving
-      function navigateTo(url, cardName) {
-        if (!url) return;
-        // optional: add a small haptic-like effect (no actual vibration needed)
-        // create a quick overlay flash for premium feel
-        const overlay = document.createElement('div');
-        overlay.style.position = 'fixed';
-        overlay.style.top = '0';
-        overlay.style.left = '0';
-        overlay.style.width = '100%';
-        overlay.style.height = '100%';
-        overlay.style.backgroundColor = 'rgba(227, 27, 35, 0.3)';
-        overlay.style.backdropFilter = 'blur(8px)';
-        overlay.style.zIndex = '9999';
-        overlay.style.opacity = '0';
-        overlay.style.transition = 'opacity 0.2s ease';
-        overlay.style.pointerEvents = 'none';
-        document.body.appendChild(overlay);
-        
-        // small animation: show flash then redirect
-        overlay.style.opacity = '1';
-        setTimeout(() => {
-          // final safety before redirect
-          window.location.href = url;
-        }, 90);
-        
-        // log for debug (optional)
-        console.log(`🔁 Redirecting to ${cardName} → ${url}`);
-      }
-
-      // attach event listeners to all cards
+      // Get all cards
       const cards = document.querySelectorAll('.hub-card');
       
-      function handleCardClick(event) {
-        // prevent accidental clicks on inner elements if needed
-        const card = event.currentTarget;
-        const targetUrl = card.getAttribute('data-url');
-        const cardName = card.getAttribute('data-name') || 'section';
-        if (targetUrl) {
-          // disable further clicks during transition (avoid double redirect)
-          if (card.style.pointerEvents === 'none') return;
-          card.style.pointerEvents = 'none';
-          navigateTo(targetUrl, cardName);
-          // restore pointer events after 500ms (but redirect already happens)
-          setTimeout(() => { card.style.pointerEvents = ''; }, 600);
-        } else {
-          console.warn('Missing data-url attribute for card:', card);
-          // optional fallback: show toast but no redirect
-          const fallbackMsg = document.createElement('div');
-          fallbackMsg.innerText = '⚠️ Route not configured yet.';
-          fallbackMsg.style.position = 'fixed';
-          fallbackMsg.style.bottom = '20px';
-          fallbackMsg.style.left = '20px';
-          fallbackMsg.style.backgroundColor = '#222';
-          fallbackMsg.style.color = '#ffb347';
-          fallbackMsg.style.padding = '8px 18px';
-          fallbackMsg.style.borderRadius = '40px';
-          fallbackMsg.style.fontSize = '0.8rem';
-          fallbackMsg.style.zIndex = '10000';
-          fallbackMsg.style.backdropFilter = 'blur(10px)';
-          document.body.appendChild(fallbackMsg);
-          setTimeout(() => fallbackMsg.remove(), 2000);
-        }
-      }
-
-      cards.forEach(card => {
-        card.addEventListener('click', handleCardClick);
-        // Add accessibility: role button and keydown (Enter / Space)
-        card.setAttribute('role', 'button');
-        card.setAttribute('tabindex', '0');
-        card.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            handleCardClick(e);
-          }
-        });
-      });
-
-      // Optional: Add hover micro-interaction for touch devices (no side effects)
-      // Also, a tiny preload hint for better perceived performance (just style)
-      
-      // If you want to display an "active connections" status effect (cosmetic)
-      const statusChips = document.querySelectorAll('.status-chip');
-      setInterval(() => {
-        // just simulate subtle pulse on live sync chip
-        const syncChip = document.querySelector('.status-chip:first-child i');
-        if (syncChip) {
-          syncChip.style.transform = 'rotate(0deg)';
-          setTimeout(() => {
-            if (syncChip) syncChip.style.transform = 'rotate(360deg)';
-          }, 50);
-          setTimeout(() => {
-            if (syncChip) syncChip.style.transition = 'transform 0.4s ease';
-            if (syncChip) syncChip.style.transform = 'rotate(0deg)';
-          }, 450);
-        }
-      }, 3000);
-      
-      // Additional robust check for any broken data-urls: pre-validate logs
-      cards.forEach(card => {
-        const url = card.getAttribute('data-url');
-        const name = card.querySelector('h3')?.innerText || 'card';
-        if (!url) {
-          console.warn(`Card "${name}" missing data-url attribute. Please add correct .html path.`);
-        } else if (!url.endsWith('.html') && !url.includes('.')) {
-          console.warn(`Card "${name}" data-url "${url}" might be invalid (expected .html file).`);
-        }
-      });
-      
-      // Added extra safeguard: if someone clicks quickly, only first redirect fires.
-      let isRedirecting = false;
-      const originalNavigate = navigateTo;
-      window.navigateTo = function(url, name) {
-        if (isRedirecting) return;
-        isRedirecting = true;
-        originalNavigate(url, name);
-        setTimeout(() => { isRedirecting = false; }, 1000);
-      };
-      // rebind to use updated guard
-      window.navigateTo = navigateTo;
-      // override for internal usage
-      const superNavigate = navigateTo;
-      const guardedNavigate = (url, name) => {
-        if (window._redirectLock) return;
-        window._redirectLock = true;
-        superNavigate(url, name);
-        setTimeout(() => { window._redirectLock = false; }, 800);
-      };
-      // re-attach event handlers to use guarded version
-      cards.forEach(card => {
-        const oldClick = handleCardClick;
-        const newHandler = (e) => {
-          if (window._redirectLock) return;
-          const targetUrl = card.getAttribute('data-url');
-          const cardName = card.getAttribute('data-name') || 'system';
-          if (targetUrl) {
-            window._redirectLock = true;
-            guardedNavigate(targetUrl, cardName);
-            setTimeout(() => { window._redirectLock = false; }, 800);
-            card.style.pointerEvents = 'none';
-            setTimeout(() => { card.style.pointerEvents = ''; }, 800);
+      // Add click handler to each card
+      cards.forEach(function(card) {
+        card.addEventListener('click', function(e) {
+          // Stop any propagation
+          e.stopPropagation();
+          
+          // Get the redirect URL from data-url attribute
+          const redirectUrl = card.getAttribute('data-url');
+          
+          console.log('Card clicked! Redirecting to:', redirectUrl);
+          
+          if (redirectUrl) {
+            // Add visual feedback before redirect
+            card.style.transform = 'scale(0.97)';
+            card.style.transition = 'transform 0.05s';
+            
+            // Create flash overlay
+            const overlay = document.createElement('div');
+            overlay.style.position = 'fixed';
+            overlay.style.top = '0';
+            overlay.style.left = '0';
+            overlay.style.width = '100%';
+            overlay.style.height = '100%';
+            overlay.style.backgroundColor = '#E31B23';
+            overlay.style.opacity = '0';
+            overlay.style.transition = 'opacity 0.15s ease';
+            overlay.style.zIndex = '9999';
+            overlay.style.pointerEvents = 'none';
+            document.body.appendChild(overlay);
+            
+            // Trigger flash
+            setTimeout(function() {
+              overlay.style.opacity = '0.6';
+            }, 10);
+            
+            // Redirect after flash
+            setTimeout(function() {
+              window.location.href = redirectUrl;
+            }, 150);
           } else {
-            // fallback
-            const fallbackMsg = document.createElement('div');
-            fallbackMsg.innerText = '⚠️ Missing route configuration.';
-            fallbackMsg.style.cssText = 'position:fixed;bottom:20px;left:20px;background:#222;color:#ffb347;padding:8px 18px;border-radius:40px;z-index:10000;backdrop-filter:blur(10px);';
-            document.body.appendChild(fallbackMsg);
-            setTimeout(() => fallbackMsg.remove(), 2000);
+            console.error('No data-url attribute found on card');
+            alert('Route not configured. Please check the card configuration.');
           }
-        };
-        card.removeEventListener('click', handleCardClick);
-        card.addEventListener('click', newHandler);
-        // update keydown also
-        card.removeEventListener('keydown', (e) => {});
-        card.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            if (window._redirectLock) return;
-            newHandler(e);
-          }
+        });
+        
+        // Add cursor style to indicate clickable
+        card.style.cursor = 'pointer';
+        
+        // Add touch feedback for mobile
+        card.addEventListener('touchstart', function() {
+          card.style.transform = 'scale(0.97)';
+        });
+        
+        card.addEventListener('touchend', function() {
+          setTimeout(function() {
+            card.style.transform = '';
+          }, 100);
         });
       });
       
-      // also provide developer friendly console info
-      console.log('✅ Rands Vibe Hub ready | Redirect targets: vvip-tab.html, butcher-orders.html, shisha-orders.html, smart-counter-orders.html');
-      console.log('✅ Logo loaded from: images/rands-logo2.png');
+      console.log('✅ Hub ready - Cards are clickable! Redirects to: vvip-tab.html, butcher-orders.html, shisha-orders.html, smart-counter-orders.html');
+      console.log('📁 Logo path: images/rands-logo.png');
     })();
   </script>
 </body>
